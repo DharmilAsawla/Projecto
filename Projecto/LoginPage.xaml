@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Projecto.UserInterface.LoginPage">
+  <ContentView.Content>
+      <StackLayout Spacing="15" HorizontalOptions="CenterAndExpand" VerticalOptions="Center">
+            <Label Text="Please Login" />
+            <Entry x:Name="Entry_username" Placeholder="Username"/>
+            <Entry x:Name="Entry_password" Placeholder="password" IsPassword="True"/>
+            <Button Text="Login" Clicked="ButtonLogin_Clicked"/>
+            <Button Text="Register"/>
+        </StackLayout>
+  </ContentView.Content>
+</ContentView>

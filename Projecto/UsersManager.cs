@@ -23,37 +23,37 @@ using Microsoft.WindowsAzure.MobileServices.Sync;
 
 namespace Projecto
 {
-    public partial class TodoItemManager
+    public partial class UsersManager
     {
-        static TodoItemManager defaultInstance = new TodoItemManager();
+        static UsersManager defaultInstance = new UsersManager();
         MobileServiceClient client;
 
 #if OFFLINE_SYNC_ENABLED
-        IMobileServiceSyncTable<TodoItem> todoTable;
+        IMobileServiceSyncTable<Users> UsersTable;
 #else
-        IMobileServiceTable<TodoItem> todoTable;
+        IMobileServiceTable<Users> UsersTable;
 #endif
 
         const string offlineDbPath = @"localstore.db";
 
-        private TodoItemManager()
+        private UsersManager()
         {
             this.client = new MobileServiceClient(Constants.ApplicationURL);
 
 #if OFFLINE_SYNC_ENABLED
             var store = new MobileServiceSQLiteStore(offlineDbPath);
-            store.DefineTable<TodoItem>();
+            store.DefineTable<Users>();
 
             //Initializes the SyncContext using the default IMobileServiceSyncHandler.
             this.client.SyncContext.InitializeAsync(store);
 
-            this.todoTable = client.GetSyncTable<TodoItem>();
+            this.UsersTable = client.GetSyncTable<Users>();
 #else
-            this.todoTable = client.GetTable<TodoItem>();
+            this.UsersTable = client.GetTable<Users>();
 #endif
         }
 
-        public static TodoItemManager DefaultManager
+        public static UsersManager DefaultManager
         {
             get
             {
@@ -72,8 +72,7 @@ namespace Projecto
 
         public bool IsOfflineEnabled
         {
-            get { return todoTable is Microsoft.WindowsAzure.MobileServices.Sync.IMobileServiceSyncTable<TodoItem>;}
-            
+            get { return UsersTable is Microsoft.WindowsAzure.MobileServices.Sync.IMobileServiceSyncTable<Users>; }
         }
 
         public async Task<ObservableCollection<TodoItem>> GetTodoItemsAsync(bool syncItems = false)
@@ -86,7 +85,7 @@ namespace Projecto
                     await this.SyncAsync();
                 }
 #endif
-                IEnumerable<TodoItem> items = await todoTable
+                IEnumerable<TodoItem> items = await UsersTable
                     .Where(todoItem => !todoItem.Done)
                     .ToEnumerableAsync();
 
@@ -107,11 +106,11 @@ namespace Projecto
         {
             if (item.Id == null)
             {
-                await todoTable.InsertAsync(item);
+                await UsersTable.InsertAsync(item);
             }
             else
             {
-                await todoTable.UpdateAsync(item);
+                await UsersTable.UpdateAsync(item);
             }
         }
 
@@ -124,11 +123,11 @@ namespace Projecto
             {
                 await this.client.SyncContext.PushAsync();
 
-                await this.todoTable.PullAsync(
+                await this.UsersTable.PullAsync(
                     //The first parameter is a query name that is used internally by the client SDK to implement incremental sync.
                     //Use a different query name for each unique query in your program
                     "allTodoItems",
-                    this.todoTable.CreateQuery());
+                    this.UsersTable.CreateQuery());
             }
             catch (MobileServicePushFailedException exc)
             {
